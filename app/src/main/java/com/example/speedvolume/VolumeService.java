@@ -51,9 +51,12 @@ public class VolumeService extends Service implements LocationListener {
         if (location == null || !location.hasSpeed()) return;
         float kmh = location.getSpeed() * 3.6f;
         int targetPercent;
-        if (kmh < 20f) targetPercent = 20;
-        else if (kmh >= 80f) targetPercent = 100;
-        else targetPercent = 20 + Math.round((kmh - 20f) * 80f / 60f);
+        if (kmh <= 10f) {
+    targetPercent = 60;
+} else if (kmh >= 75f) {
+    targetPercent = 100;
+} else {
+    targetPercent = 60 + Math.round((kmh - 10f) * 40f / 65f);
 
         int max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         int target = Math.round(max * targetPercent / 100f);
