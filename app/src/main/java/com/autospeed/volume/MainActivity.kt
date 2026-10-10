@@ -25,6 +25,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -90,6 +92,7 @@ private fun Dashboard(onStart: () -> Unit, onStop: () -> Unit) {
     var minVol by remember { mutableFloatStateOf(prefs.getInt(AppPrefs.MIN_VOLUME, 20).toFloat()) }
     var maxVol by remember { mutableFloatStateOf(prefs.getInt(AppPrefs.MAX_VOLUME, 75).toFloat()) }
     var maxSpeed by remember { mutableFloatStateOf(prefs.getInt(AppPrefs.MAX_SPEED, 120).toFloat()) }
+    var previewSpeed by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -167,7 +170,12 @@ private fun Dashboard(onStart: () -> Unit, onStop: () -> Unit) {
                 Text("منحنی سرعت و صدا", color = Ink, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                 Text("نمایش رابطهٔ خطی بین سرعت و سطح صدا", color = Muted, fontSize = 12.sp)
                 Spacer(Modifier.height(12.dp))
-                Canvas(Modifier.fillMaxWidth().height(100.dp)) {
+                Canvas(Modifier.fillMaxWidth().height(140.dp).pointerInput(maxSpeed) {
+                    detectTapGestures { tap ->
+                        val usableWidth = (size.width - 16f).coerceAtLeast(1f)
+                        previewSpeed = ((tap.x - 8f) / usableWidth).coerceIn(0f, 1f) * maxSpeed
+                    }
+                }) {
                     val left = 8f; val right = size.width - 8f; val top = 8f; val bottom = size.height - 8f
                     for (i in 0..3) {
                         val y = top + (bottom - top) * i / 3
@@ -180,11 +188,20 @@ private fun Dashboard(onStart: () -> Unit, onStop: () -> Unit) {
                         Offset(x, bottom - (bottom - top) * volumeFraction)
                     }
                     pts.zipWithNext().forEach { (a, b) -> drawLine(Teal, a, b, 4f) }
+                    val markerFraction = (previewSpeed / maxSpeed.coerceAtLeast(1f)).coerceIn(0f, 1f)
+                    val markerVolume = (minVol + (maxVol - minVol) * markerFraction) / 100f
+                    val marker = Offset(left + (right - left) * markerFraction, bottom - (bottom - top) * markerVolume)
+                    drawCircle(color = NeonBlue.copy(alpha = .25f), radius = 13f, center = marker)
+                    drawCircle(color = Teal, radius = 6f, center = marker)
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("۰ km/h", color = Muted, fontSize = 11.sp)
                     Text("${maxSpeed.toInt()} km/h", color = Muted, fontSize = 11.sp)
                 }
+                Spacer(Modifier.height(8.dp))
+                val previewVolume = (minVol + (maxVol - minVol) * (previewSpeed / maxSpeed.coerceAtLeast(1f))).toInt()
+                Text("برای بررسی منحنی روی نمودار لمس کنید", color = Muted, fontSize = 11.sp)
+                Text("سرعت انتخابی: ${previewSpeed.toInt()} km/h   •   صدای محاسبه‌شده: $previewVolume٪", color = Teal, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
             }
             Spacer(Modifier.height(20.dp))
             Button(
