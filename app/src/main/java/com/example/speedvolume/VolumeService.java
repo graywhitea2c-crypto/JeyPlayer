@@ -23,8 +23,8 @@ import androidx.core.content.ContextCompat;
 
 /**
  * GPS speed-based media volume controller.
- * Speed bands: <20=60%, 20-<30=66%, 30-<45=72%, 45-<55=78%,
- * 55-<60=84%, 60-<65=90%, 65-<70=95%, 70+=100%.
+ * Speed bands: <20=60%, 20-<28=66%, 28-<40=72%, 40-<50=78%,
+ * 50-<55=84%, 55-<60=90%, 60-<70=95%, 70+=100%.
  * Changes STREAM_MUSIC only, not ringtone or call volume.
  */
 public class VolumeService extends Service implements LocationListener {
@@ -120,15 +120,15 @@ public class VolumeService extends Service implements LocationListener {
     private int calculateTargetPercent(float kmh) {
         if (kmh < 20f) {
             return 60;
-        } else if (kmh < 30f) {
+        } else if (kmh < 28f) {
             return 66;
-        } else if (kmh < 45f) {
+        } else if (kmh < 40f) {
             return 72;
-        } else if (kmh < 55f) {
+        } else if (kmh < 50f) {
             return 78;
-        } else if (kmh < 60f) {
+        } else if (kmh < 55f) {
             return 84;
-        } else if (kmh < 65f) {
+        } else if (kmh < 60f) {
             return 90;
         } else if (kmh < 70f) {
             return 95;
