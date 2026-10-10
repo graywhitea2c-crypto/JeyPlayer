@@ -1,1 +1,6 @@
-
+<resources>
+    <color name="autospeed_bg">#050810</color>
+    <color name="autospeed_panel">#0B1422</color>
+    <color name="autospeed_neon">#00E5FF</color>
+    <color name="autospeed_blue">#287BFF</color>
+</resources>
