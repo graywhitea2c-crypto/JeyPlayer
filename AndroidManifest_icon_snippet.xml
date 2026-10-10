@@ -1,0 +1,6 @@
+داخل تگ <application ...> این دو ویژگی را اضافه یا اصلاح کن:
+
+android:icon="@mipmap/ic_launcher"
+android:roundIcon="@mipmap/ic_launcher"
+
+اگر این ویژگی‌ها از قبل وجود دارند، مقدارشان را به همین مقدار تغییر بده.
